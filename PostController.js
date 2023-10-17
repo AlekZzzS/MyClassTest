@@ -35,7 +35,7 @@ class PostController {
             let currentDate = startDate;
             let createdCount = 0;
 
-            while (currentDate <= endDate && (lessonsCount ? createdCount < lessonsCount : true)) {
+            while (currentDate <= endDate || (lessonsCount && createdCount < lessonsCount)) {
                 if (days.includes(currentDate.getDay())) {
                     const lessonResult = await client.query(
                         `INSERT INTO lessons (date, title, status) VALUES ($1, $2, $3) RETURNING id`,
@@ -54,7 +54,7 @@ class PostController {
                     createdLessons.push(lessonId);
                     createdCount++;
                 }
-                currentDate.setDate(currentDate.getDate() + 1);
+                currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
             }
             res.json({ createdLessons });
         } catch (error) {
